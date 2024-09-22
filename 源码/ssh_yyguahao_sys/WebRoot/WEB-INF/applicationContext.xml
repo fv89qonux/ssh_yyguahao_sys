@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans
+	xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+
+
+    <!--配置数据库的驱动程序，Hibernate在连接数据库时，需要用到数据库的驱动程序--> 
+	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource">
+		<!-- 
+		<property name="driverClassName"
+			value="com.microsoft.jdbc.sqlserver.SQLServerDriver">
+		</property>
+		
+		<property name="url"
+			value="jdbc:microsoft:sqlserver://localhost:1433;databaseName=db_yygh">
+		</property>
+		<property name="username" value="sa"></property>
+		<property name="password" value="123"></property>
+		-->
+		<!--
+			<property name="driverClassName"
+			value="com.microsoft.sqlserver.jdbc.SQLServerDriver"> </property>
+			<property name="url"
+			value="jdbc:sqlserver://localhost:1433;databaseName=db_yygh">
+			</property> <property name="username" value="sa"></property>
+			<property name="password" value="123"></property>
+		-->
+		<property name="driverClassName">
+			<value>com.mysql.cj.jdbc.Driver</value>
+		</property>
+		<!-- 数据库地址，这里也要注意一下编码，不然乱码可是很郁闷的哦！ -->
+		<property name="url" value="jdbc:mysql://127.0.0.1:3306/ssh_yyguahao_sys?useSSL=false&amp;serverTimezone=Asia/Shanghai">
+		</property>
+		<!-- 数据库的用户名 -->
+		<property name="username">
+			<value>ssh_yyguahao_sys</value>
+		</property>
+		<!-- 数据库的密码 -->
+		<property name="password">
+			<value>ssh_yyguahao_sys</value>
+		</property>
+	</bean>
+	
+	
+	 <!--会话工厂配置，读取Hibernate数据库配置信息--> 
+	<bean id="sessionFactory"
+		class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">
+		<!--依赖注入数据源，注入正式上文定义的dataSource-->
+		<property name="dataSource">
+			<ref bean="dataSource" />
+		</property>
+		<property name="hibernateProperties">
+			<props>
+			    <!--指定Hibernate的连接数据库的方言-->
+				<prop key="hibernate.dialect">
+					org.hibernate.dialect.SQLServerDialect
+				</prop>
+				 <!-- 是否在控制台打印sql语句    -->
+				<prop key="hibernate.show_sql">true</prop>
+			</props>
+		</property>
+		<!--列出全部的映射文件-->
+		<property name="mappingResources">
+			<list>
+				<value>com/model/TAdmin.hbm.xml</value>
+			    <value>com/model/TLiuyan.hbm.xml</value>
+			    <value>com/model/TUser.hbm.xml</value>
+			    <value>com/model/TGonggao.hbm.xml</value>
+			    <value>com/model/TKeshi.hbm.xml</value>
+			    <value>com/model/TYisheng.hbm.xml</value>
+			    <value>com/model/TChuangwei.hbm.xml</value>
+			    <value>com/model/TYuyue.hbm.xml</value>
+			    <value>com/model/TYuyueZhuyuan.hbm.xml</value>
+			</list>
+		</property>
+	</bean>
+	
+	<bean id="indexAction" class="com.action.indexAction" scope="prototype">
+	</bean>
+	
+	<!--配置持久化类的DAO bean-->
+	<bean id="TUserDAO" class="com.dao.TUserDAO">
+		<property name="sessionFactory">
+		<!--依赖性注入来传入SessionFactory的应用-->
+			<ref bean="sessionFactory"/>
+		</property>
+	</bean>
+	<bean id="userAction" class="com.action.UserAction" scope="prototype">
+		<property name="userDAO">
+			<ref bean="TUserDAO" />
+		</property>
+	</bean>
+	
+	
+	
+	<bean id="TAdminDAO" class="com.dao.TAdminDAO">
+		<property name="sessionFactory">
+			<ref bean="sessionFactory" />
+		</property>
+	</bean>
+	<bean id="adminAction" class="com.action.adminAction" scope="prototype">
+		<property name="adminDAO">
+			<ref bean="TAdminDAO" />
+		</property>
+	</bean>
+	
+	
+	<bean id="TLiuyanDAO" class="com.dao.TLiuyanDAO">
+		<property name="sessionFactory">
+			<ref bean="sessionFactory" />
+		</property>
+	</bean>
+	<bean id="liuyanAction" class="com.action.liuyanAction" scope="prototype">
+		<property name="liuyanDAO">
+			<ref bean="TLiuyanDAO" />
+		</property>
+	</bean>
+	
+	
+	<bean id="TGonggaoDAO" class="com.dao.TGonggaoDAO">
+		<property name="sessionFactory">
+			<ref bean="sessionFactory" />
+		</property>
+	</bean>
+	<bean id="gonggaoAction" class="com.action.gonggaoAction" scope="prototype">
+		<property name="gonggaoDAO">
+			<ref bean="TGonggaoDAO" />
+		</property>
+	</bean>
+	
+	
+	<bean id="TKeshiDAO" class="com.dao.TKeshiDAO">
+		<property name="sessionFactory">
+			<ref bean="sessionFactory" />
+		</property>
+	</bean>
+	<bean id="keshiAction" class="com.action.keshiAction" scope="prototype">
+	     <property name="yishengDAO">
+	         <ref bean="TYishengDAO"/>
+	     </property>
+	     <property name="keshiDAO">
+	         <ref bean="TKeshiDAO"/>
+	     </property>
+	</bean>
+	
+	
+	<bean id="TYishengDAO" class="com.dao.TYishengDAO">
+		<property name="sessionFactory">
+			<ref bean="sessionFactory" />
+		</property>
+	</bean>
+	<bean id="yishengAction" class="com.action.yishengAction" scope="prototype">
+	     <property name="yishengDAO">
+	         <ref bean="TYishengDAO"/>
+	     </property>
+	     <property name="keshiDAO">
+	         <ref bean="TKeshiDAO"/>
+	     </property>
+	</bean>
+	
+
+	<bean id="TChuangweiDAO" class="com.dao.TChuangweiDAO">
+		<property name="sessionFactory">
+			<ref bean="sessionFactory" />
+		</property>
+	</bean>
+	<bean id="chuangweiAction" class="com.action.chuangweiAction" scope="prototype">
+	     <property name="chuangweiDAO">
+	         <ref bean="TChuangweiDAO"/>
+	     </property>
+	        
+	</bean>
+	
+	
+	<bean id="TYuyueDAO" class="com.dao.TYuyueDAO">
+		<property name="sessionFactory">
+			<ref bean="sessionFactory" />
+		</property>
+	</bean>
+	<bean id="yuyueAction" class="com.action.yuyueAction" scope="prototype">
+	     <property name="yuyueDAO">
+	         <ref bean="TYuyueDAO"/>
+	     </property>
+	     <property name="yishengDAO">
+	         <ref bean="TYishengDAO"/>
+	     </property>
+	     <property name="userDAO">
+			<ref bean="TUserDAO" />
+		</property>
+	</bean>
+	
+	
+	<bean id="TYuyueZhuyuanDAO" class="com.dao.TYuyueZhuyuanDAO">
+		<property name="sessionFactory">
+			<ref bean="sessionFactory" />
+		</property>
+	</bean>
+	<bean id="yuyueZhuyuanAction" class="com.action.yuyueZhuyuanAction" scope="prototype">
+	     <property name="yuyueZhuyuanDAO">
+	         <ref bean="TYuyueZhuyuanDAO"/>
+	     </property>
+	     <property name="chuangweiDAO">
+	         <ref bean="TChuangweiDAO"/>
+	     </property>
+	     <property name="userDAO">
+			<ref bean="TUserDAO" />
+		</property>
+	</bean>
+	
+</beans>
